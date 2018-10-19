@@ -11,7 +11,7 @@ import (
 func TestStatus(t *testing.T) {
 	a := mauth.New()
 	s := New(a)
-	req, err := http.NewRequest(http.MethodGet, "/status", nil)
+	req, err := http.NewRequest(http.MethodGet, "/v1/status", nil)
 	if err != nil {
 		t.Error(err)
 	}

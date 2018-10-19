@@ -28,7 +28,7 @@ func TestWrite(t *testing.T) {
 		t.Error(err)
 	}
 
-	req, err := http.NewRequest(http.MethodPost, "/jobs", &buf)
+	req, err := http.NewRequest(http.MethodPost, "/v1/jobs", &buf)
 	req.Header.Set("X-API-Key", "test")
 	req.Header.Set("X-API-Secret", "test")
 	w := httptest.NewRecorder()
