@@ -7,7 +7,6 @@ import (
 )
 
 func (s Server) listQueues() httprouter.Handle {
-
 	type listQueueResponse struct {
 		Queues []string `json:"queues"`
 	}

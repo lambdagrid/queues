@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/lambdagrid/queues/auth"
@@ -23,12 +24,12 @@ func HeaderAuth(ap auth.AuthProvider, next httprouter.Handle) httprouter.Handle 
 		}
 		valid, err := ap.Check(APISecret, APIKey)
 		if err != nil {
-			http.Error(w, "Error checking authentication", http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("Error checking authentication:%s ", err.Error()), http.StatusInternalServerError)
 			return
 		}
 
 		if !valid {
-			http.Error(w, "Invalid credentials", http.StatusForbidden)
+			http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 			return
 		}
 		next(w, r, ps)

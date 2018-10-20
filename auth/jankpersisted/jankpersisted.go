@@ -16,14 +16,31 @@ type JankPersistedAuthStore struct {
 }
 
 type accountRecord struct {
-	ID         int
+	AuthKey    string // auth key is account key, super jank
 	Name       string
-	AuthKey    string
 	AuthSecret string
 }
 
 func (j *JankPersistedAuthStore) Check(key, secret string) (bool, error) {
-	return true, nil
+	valid := false
+	err := j.db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("accounts"))
+		accountBytes := b.Get([]byte(key))
+		if accountBytes == nil {
+			return fmt.Errorf("That account doesn't exist")
+		}
+
+		var acc accountRecord
+		err := json.Unmarshal(accountBytes, &acc)
+		if err != nil {
+			return err
+		}
+
+		valid = secret != acc.AuthSecret
+		return err
+	})
+
+	return valid, err
 }
 
 func (j *JankPersistedAuthStore) CreateAccount(accountName string) (key, secret string, err error) {
@@ -40,13 +57,7 @@ func (j *JankPersistedAuthStore) CreateAccount(accountName string) (key, secret 
 			return fmt.Errorf("There was an error generating the key")
 		}
 
-		newAccountID, err := b.NextSequence()
-		if err != nil {
-			return err
-		}
-
 		rec := accountRecord{}
-		rec.ID = int(newAccountID)
 		rec.Name = accountName
 		rec.AuthKey = key
 		rec.AuthSecret = secret
@@ -56,7 +67,7 @@ func (j *JankPersistedAuthStore) CreateAccount(accountName string) (key, secret 
 			return fmt.Errorf("There was an error serializing the account record")
 		}
 
-		b.Put([]byte(accountName), encoded)
+		b.Put([]byte(key), encoded)
 		return nil
 	})
 

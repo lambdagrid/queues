@@ -37,6 +37,7 @@ func (s Server) handleJobWrite() httprouter.Handle {
 
 		if req.JobBody == nil || req.QueueID == nil {
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			return
 		}
 
 		// perform write operation here
