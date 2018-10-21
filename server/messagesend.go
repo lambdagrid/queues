@@ -62,8 +62,8 @@ func (s Server) sendMessage() httprouter.Handle {
 		// we've verified the user can see the queue, let's insert the message now
 		// content based deduplication IS ENABLED
 		result, err := s.sqs.SendMessage(&sqs.SendMessageInput{
-			MessageBody:    aws.String(*req.Payload),
-			QueueUrl:       aws.String(*queue.QueueURL),
+			MessageBody:    req.Payload,
+			QueueUrl:       queue.QueueURL,
 			MessageGroupId: aws.String("defaultgroupid"),
 		})
 		if err != nil {
@@ -72,5 +72,6 @@ func (s Server) sendMessage() httprouter.Handle {
 		}
 
 		log.Println("Sent message, seq number", *result.SequenceNumber)
+
 	}
 }
