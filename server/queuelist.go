@@ -8,8 +8,9 @@ import (
 )
 
 type Queue struct {
-	Name    string `db:"name"`
-	OwnerID string `db:"owner_id"`
+	Name     string  `db:"name"`
+	OwnerID  string  `db:"owner_id"`
+	QueueURL *string `db:"queue_url"`
 }
 
 func (s Server) listQueues() httprouter.Handle {
