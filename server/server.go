@@ -1,6 +1,9 @@
 package server
 
 import (
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/sqs"
 	"github.com/jmoiron/sqlx"
 	"github.com/lambdagrid/queues/auth"
 	"github.com/lambdagrid/queues/middleware"
@@ -12,13 +15,24 @@ type Server struct {
 	authProvider auth.AuthProvider
 	router       *httprouter.Router
 	DB           *sqlx.DB // TODO: Abstract much of the functionality away
+	sqs          *sqs.SQS
 }
 
 func New(authProvider auth.AuthProvider, db *sqlx.DB) Server {
+	sess, err := session.NewSession(&aws.Config{
+		Region: aws.String("us-west-2"),
+	})
+
+	if err != nil {
+		panic(err)
+	}
+	svc := sqs.New(sess)
+
 	s := Server{
 		authProvider: authProvider,
 		router:       httprouter.New(),
 		DB:           db,
+		sqs:          svc,
 	}
 	s.routes()
 

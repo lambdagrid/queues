@@ -9,7 +9,7 @@ import (
 
 type Queue struct {
 	Name     string  `db:"name"`
-	OwnerID  string  `db:"owner_id"`
+	OwnerID  int     `db:"owner_id"`
 	QueueURL *string `db:"queue_url"`
 }
 

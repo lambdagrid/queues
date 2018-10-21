@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
 	"github.com/julienschmidt/httprouter"
 )
@@ -16,16 +15,6 @@ func (s Server) createQueue() httprouter.Handle {
 	type createQueueRequest struct {
 		QueueName *string `json:"name"`
 	}
-
-	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String("us-west-2"),
-	})
-
-	if err != nil {
-		panic(err)
-	}
-
-	svc := sqs.New(sess)
 
 	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		apikey := r.Header.Get("X-API-Key")
@@ -65,11 +54,12 @@ func (s Server) createQueue() httprouter.Handle {
 		rows.Close()
 
 		// now create the queue on the backend, TODO: make safer
-
-		result, err := svc.CreateQueue(&sqs.CreateQueueInput{
+		// TODO: Examine content based deduplication decision
+		result, err := s.sqs.CreateQueue(&sqs.CreateQueueInput{
 			QueueName: aws.String(fmt.Sprintf("%d_%s.fifo", ownerid, *req.QueueName)),
 			Attributes: map[string]*string{
-				"FifoQueue": aws.String("true"),
+				"FifoQueue":                 aws.String("true"),
+				"ContentBasedDeduplication": aws.String("true"),
 			},
 		})
 
