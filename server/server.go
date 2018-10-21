@@ -18,6 +18,7 @@ func New(authProvider auth.AuthProvider, db *sqlx.DB) Server {
 	s := Server{
 		authProvider: authProvider,
 		router:       httprouter.New(),
+		DB:           db,
 	}
 	s.routes()
 
