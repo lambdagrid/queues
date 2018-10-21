@@ -56,5 +56,5 @@ func (s Server) routes() {
 	s.router.GET("/v1/queue/message/receive/:queuename", middleware.HeaderAuth(s.authProvider, s.receiveMessage()))
 	// queue name in payload
 	s.router.POST("/v1/queue/message/complete", middleware.HeaderAuth(s.authProvider, s.completeMessage()))
-	s.router.POST("/v1/queue/message/fail", middleware.HeaderAuth(s.authProvider, s.completeMessage()))
+	s.router.POST("/v1/queue/message/fail", middleware.HeaderAuth(s.authProvider, s.failMessage()))
 }
