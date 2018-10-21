@@ -1,77 +1,61 @@
 package jankpersisted
 
 import (
-	"fmt"
-
 	"crypto/rand"
+	"database/sql"
 	"encoding/base64"
-	"encoding/json"
+	"log"
 
-	"github.com/boltdb/bolt"
+	"github.com/jmoiron/sqlx"
 	"github.com/lambdagrid/queues/auth"
 )
 
 type JankPersistedAuthStore struct {
-	db *bolt.DB
+	db *sqlx.DB
 }
 
 type accountRecord struct {
-	AuthKey    string // auth key is account key, super jank
-	Name       string
-	AuthSecret string
+	ID         int    `db:"id"`
+	AuthKey    string `db:"auth_key"` // auth key is account key, super jank
+	Name       string `db:"account_name"`
+	AuthSecret string `db:"auth_secret"`
 }
 
 func (j *JankPersistedAuthStore) Check(key, secret string) (bool, error) {
 	valid := false
-	err := j.db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte("accounts"))
-		accountBytes := b.Get([]byte(key))
-		if accountBytes == nil {
-			return fmt.Errorf("That account doesn't exist")
-		}
 
-		var acc accountRecord
-		err := json.Unmarshal(accountBytes, &acc)
-		if err != nil {
-			return err
-		}
+	var rec accountRecord
 
-		valid = secret != acc.AuthSecret
-		return err
-	})
-
+	err := j.db.Get(&rec, "SELECT * FROM accounts WHERE auth_key = $1", key)
+	if err == sql.ErrNoRows {
+		log.Println("NO ROWS", key)
+		return valid, nil
+	} else if err != nil {
+		return valid, err
+	}
+	valid = rec.AuthSecret == secret
 	return valid, err
 }
 
 func (j *JankPersistedAuthStore) CreateAccount(accountName string) (key, secret string, err error) {
-	err = j.db.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte("accounts"))
-		// get the account name, fail if it doesn't exist
-		existing := b.Get([]byte(accountName))
-		if existing != nil {
-			return fmt.Errorf("An account exists with that name already")
-		}
+	key, secret, err = generateAPIKeyAndSecret()
+	if err != nil {
+		return
+	}
 
-		key, secret, err = generateAPIKeyAndSecret()
-		if err != nil {
-			return fmt.Errorf("There was an error generating the key")
-		}
+	stmt := `INSERT INTO accounts (account_name, auth_key, auth_secret) VALUES ($1, $2, $3)`
 
-		rec := accountRecord{}
-		rec.Name = accountName
-		rec.AuthKey = key
-		rec.AuthSecret = secret
+	rows, err := j.db.Query(stmt, accountName, key, secret)
+	if err != nil {
+		return
+	}
 
-		encoded, err := json.Marshal(rec)
-		if err != nil {
-			return fmt.Errorf("There was an error serializing the account record")
-		}
+	defer rows.Close()
+	if rows.Err() != nil {
+		err = rows.Err()
+	}
 
-		b.Put([]byte(key), encoded)
-		return nil
-	})
-
-	return key, secret, err
+	return
 }
 
 func generateAPIKeyAndSecret() (key, secret string, err error) {
@@ -87,6 +71,6 @@ func generateAPIKeyAndSecret() (key, secret string, err error) {
 	return key, secret, nil
 }
 
-func New(db *bolt.DB) auth.AuthProvider {
+func New(db *sqlx.DB) auth.AuthProvider {
 	return &JankPersistedAuthStore{db}
 }

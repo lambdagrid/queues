@@ -12,6 +12,8 @@ func (s Server) listQueues() httprouter.Handle {
 	}
 
 	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-
+		// apikey := r.Header.Get("X-API-Key")
+		// find the relevant
+		return
 	}
 }

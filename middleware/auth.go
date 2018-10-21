@@ -22,7 +22,7 @@ func HeaderAuth(ap auth.AuthProvider, next httprouter.Handle) httprouter.Handle 
 			http.Error(w, "Request requires API secret", http.StatusBadRequest)
 			return
 		}
-		valid, err := ap.Check(APISecret, APIKey)
+		valid, err := ap.Check(APIKey, APISecret)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Error checking authentication:%s ", err.Error()), http.StatusInternalServerError)
 			return

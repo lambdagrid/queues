@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/jmoiron/sqlx"
 	"github.com/lambdagrid/queues/auth"
 	"github.com/lambdagrid/queues/middleware"
 
@@ -10,9 +11,10 @@ import (
 type Server struct {
 	authProvider auth.AuthProvider
 	router       *httprouter.Router
+	DB           *sqlx.DB // TODO: Abstract much of the functionality away
 }
 
-func New(authProvider auth.AuthProvider) Server {
+func New(authProvider auth.AuthProvider, db *sqlx.DB) Server {
 	s := Server{
 		authProvider: authProvider,
 		router:       httprouter.New(),
