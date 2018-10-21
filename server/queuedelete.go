@@ -2,17 +2,15 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/sqs"
 	"github.com/julienschmidt/httprouter"
 )
 
-func (s Server) createQueue() httprouter.Handle {
-	type createQueueRequest struct {
+func (s Server) deleteQueue() httprouter.Handle {
+	type deleteQueueRequest struct {
 		QueueName *string `json:"name"`
 	}
 
@@ -31,7 +29,7 @@ func (s Server) createQueue() httprouter.Handle {
 			return
 		}
 
-		var req createQueueRequest
+		var req deleteQueueRequest
 		err = json.Unmarshal(body, &req)
 		if err != nil {
 			http.Error(w, "Could not decode body", http.StatusBadRequest)
@@ -45,22 +43,12 @@ func (s Server) createQueue() httprouter.Handle {
 		// TODO: Add validation for alphanum, hyphens, underscores, fifo suffix,
 		// and length
 
-		stmt := `INSERT INTO queues (name, owner_id) VALUES ($1, $2)`
-		rows, err := s.DB.Query(stmt, *req.QueueName, ownerid)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusForbidden)
-			return
-		}
-		rows.Close()
+		var queue Queue
+		stmt := `SELECT * FROM queues WHERE name = $1`
+		err = s.DB.Get(&queue, stmt, *req.QueueName)
 
-		// now create the queue on the backend, TODO: make safer
-		// TODO: Examine content based deduplication decision
-		result, err := s.sqs.CreateQueue(&sqs.CreateQueueInput{
-			QueueName: aws.String(fmt.Sprintf("%d_%s", ownerid, *req.QueueName)),
-			/*Attributes: map[string]*string{
-				"FifoQueue":                 aws.String("true"),
-				"ContentBasedDeduplication": aws.String("true"),
-			},*/
+		_, err = s.sqs.DeleteQueue(&sqs.DeleteQueueInput{
+			QueueUrl: queue.QueueURL,
 		})
 
 		if err != nil {
@@ -68,8 +56,8 @@ func (s Server) createQueue() httprouter.Handle {
 			return
 		}
 
-		stmt = `UPDATE queues SET queue_url = $1 WHERE name = $2`
-		_, err = s.DB.Queryx(stmt, result.QueueUrl, *req.QueueName)
+		stmt = `DELETE FROM queues WHERE name = $1`
+		_, err = s.DB.Queryx(stmt, *req.QueueName)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

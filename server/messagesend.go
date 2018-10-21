@@ -3,10 +3,8 @@ package server
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"net/http"
 
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/sqs"
 	"github.com/julienschmidt/httprouter"
 )
@@ -61,17 +59,15 @@ func (s Server) sendMessage() httprouter.Handle {
 
 		// we've verified the user can see the queue, let's insert the message now
 		// content based deduplication IS ENABLED
-		result, err := s.sqs.SendMessage(&sqs.SendMessageInput{
-			MessageBody:    req.Payload,
-			QueueUrl:       queue.QueueURL,
-			MessageGroupId: aws.String("defaultgroupid"),
+		_, err = s.sqs.SendMessage(&sqs.SendMessageInput{
+			MessageBody: req.Payload,
+			QueueUrl:    queue.QueueURL,
+			//MessageGroupId: aws.String("defaultgroupid"),
 		})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
-		log.Println("Sent message, seq number", *result.SequenceNumber)
 
 	}
 }
