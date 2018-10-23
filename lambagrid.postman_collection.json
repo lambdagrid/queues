@@ -1,0 +1,433 @@
+{
+	"info": {
+		"_postman_id": "037de21d-5d86-4b12-b215-3ac95bd4799a",
+		"name": "LambdaGrid Queue Requests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Register new account",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"account_name\": \"test\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/v1/signup",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Queue With Invalid",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{authKey}}"
+					},
+					{
+						"key": "X-API-Secret",
+						"value": "{{authSecret}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"doesnt\": \"include name\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/v1/queue/create",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"queue",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Queue",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{authKey}}"
+					},
+					{
+						"key": "X-API-Secret",
+						"value": "{{authSecret}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"testqueues2\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/v1/queue/create",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"queue",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Queue",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{authKey}}"
+					},
+					{
+						"key": "X-API-Secret",
+						"value": "{{authSecret}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"testqueues2\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/v1/queue/delete",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"queue",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Send Message",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{authKey}}"
+					},
+					{
+						"key": "X-API-Secret",
+						"value": "{{authSecret}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"testqueues2\",\n\t\"payload\": \"hehe it works\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/v1/queue/message/send",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"queue",
+						"message",
+						"send"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Message",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{authKey}}"
+					},
+					{
+						"key": "X-API-Secret",
+						"value": "{{authSecret}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"testqueues2\",\n\t\"payload\": \"hehe it works\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/v1/queue/message/send",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"queue",
+						"message",
+						"send"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Receive Message",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{authKey}}"
+					},
+					{
+						"key": "X-API-Secret",
+						"value": "{{authSecret}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"testqueues2\",\n\t\"payload\": \"hehe it works\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/v1/queue/message/receive/testqueues2",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"queue",
+						"message",
+						"receive",
+						"testqueues2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "QueueInfo",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{authKey}}"
+					},
+					{
+						"key": "X-API-Secret",
+						"value": "{{authSecret}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"testqueues2\",\n\t\"payload\": \"hehe it works\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/v1/queue/message/receive/testqueues2",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"queue",
+						"message",
+						"receive",
+						"testqueues2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Queue List With Auth",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "{{authKey}}"
+					},
+					{
+						"key": "X-API-Secret",
+						"value": "{{authSecret}}"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "localhost:8080/v1/queue/list",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"queue",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/queue/list without keys",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "localhost:8080/v1/queue/list",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"queue",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/queue/list with invalid keys",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "lol this will never be a key"
+					},
+					{
+						"key": "X-API-Secret",
+						"value": "this will never be a secret"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "localhost:8080/v1/queue/list",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"queue",
+						"list"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "b4adc230-5df5-4322-bdcb-b0f5a282bbcc",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "9d6be676-d7fd-45ab-aec4-4efb6d694610",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "0c515171-b16f-4787-a0f0-99e684051f50",
+			"key": "authKey",
+			"value": "ZKzrI+wRoIxXB8lin+lKcARewdDm+z9UJRisK7h3y5M=",
+			"type": "string"
+		},
+		{
+			"id": "da09090b-35a6-4b53-9217-7c2105ae0006",
+			"key": "authSecret",
+			"value": "KbPcnBPuvbY0gLwuvAGg+NHNfumFJywJO/rMoxoc2zQ=",
+			"type": "string"
+		}
+	]
+}
