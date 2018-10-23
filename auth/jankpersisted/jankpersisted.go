@@ -4,7 +4,6 @@ import (
 	"crypto/rand"
 	"database/sql"
 	"encoding/base64"
-	"log"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/lambdagrid/queues/auth"
@@ -28,7 +27,6 @@ func (j *JankPersistedAuthStore) Check(key, secret string) (bool, error) {
 
 	err := j.db.Get(&rec, "SELECT * FROM accounts WHERE auth_key = $1", key)
 	if err == sql.ErrNoRows {
-		log.Println("NO ROWS", key)
 		return valid, nil
 	} else if err != nil {
 		return valid, err
